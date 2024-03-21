@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&display=swap');
+
+html,
+body,
+#root,
+.app {
+  margin: 0;
+  font-family: "Noto Sans TC", sans-serif;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #6fbe667e;
+}
+::-webkit-scrollbar-thumb {
+  background: #99b87986;
+  border-radius: 5px;
+  border: 1px solid #31af358d;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #99b879;
+}
+/* ::-webkit-scrollbar-track:hover {
+  background: #6fbe664b;
+} */
+
+.all_unset {
+  all: unset;
+}
+
+@keyframes fadeInOut {
+  10% {
+    opacity: 1;
+  }
+  20% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(0.99);
+  }
+  70% {
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-up-fade-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -35%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
