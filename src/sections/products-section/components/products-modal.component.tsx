@@ -337,6 +337,14 @@ export const ProductsModal:React.FC<ProductsModalProps> = ({ isOpen, onClose, gr
                       mt="3rem"
                     >
                       <Typography variant="h4">$ {product.price.toLocaleString()}</Typography>
+                      {isSmall && 
+                      <Typography
+                        textAlign="left"
+                        variant="h4"
+                        color="red"
+                      >
+                        已購買 $ {product?.quantity ? (product.price * product.quantity).toLocaleString() : 0}
+                      </Typography>}
                         <Box display="flex" justifyContent="center" alignItems="center">
                           <IconButton
                             color="warning"
@@ -356,13 +364,14 @@ export const ProductsModal:React.FC<ProductsModalProps> = ({ isOpen, onClose, gr
                         </Box>
                       </Box>              
                     </Box>
+                    {!isSmall && 
                     <Typography
                       textAlign="left"
                       variant="h4"
                       color="red"
                     >
                       已購買 $ {product?.quantity ? (product.price * product.quantity).toLocaleString() : 0}
-                    </Typography>
+                    </Typography>}
                 </Card>) :
                 (<Card 
                   elevation={2}
@@ -385,7 +394,8 @@ export const ProductsModal:React.FC<ProductsModalProps> = ({ isOpen, onClose, gr
                       margin: isSmall ? 'auto' : undefined,
                       opacity: '0.25',
                     }}
-                    src="https://images.unsplash.com/photo-1551963831-b3b1ca40c98e" alt="image"
+                    src={`https://shopstore-dashboarduploaddev.openinfo.info${product.image}`}
+                    alt="image"
                   />
                   <Box sx={{ flexGrow: isSmall ? 1 : undefined, opacity: '0.25' }}
                   >

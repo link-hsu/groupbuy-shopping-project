@@ -8,18 +8,18 @@ import {
   Typography,
 } from "@mui/material"
 import { memberBackground } from "@/assets";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { loginButton } from "@/assets";
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 
-const lineLoginLink = "https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=2004143512&redirect_uri=https://link-hsu.github.io/groupbuy-shopping-project/auth&state=login&scope=openid%20profile%20email";
+const lineLoginLink = "https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=2004143512&redirect_uri=https://link-hsu.github.io/groupbuy-shopping-project&state=login&scope=openid%20profile%20email";
 
 export type inputType = {
-  lineId: string | null;
+  lineId: string;
   userName: string;
-  phone: string | null;
-  email: string | null;
-  address: string | null;
+  phone: string;
+  email: string;
+  address: string;
 }
 
 const inputItems = [
@@ -33,44 +33,165 @@ const inputItems = [
 export const MemberSection: React.FC = () => {
   const { breakpoints } = useTheme();
   const isSmall = useMediaQuery(breakpoints.down('sm'));
-  const uid = localStorage.getItem('uid');
-
-  const uidDataString = localStorage.getItem('uidData');
-  let uidData: any;
-  let lineId: string | null = '';
-  let email: string | null = ''; 
-
-  if (uidDataString) {
-      uidData = JSON.parse(uidDataString);
-      lineId = uidData.name;
-      email = uidData.email;
-  }
+ 
+  const queryParams = new URLSearchParams(window.location.search);
+  const state = queryParams.get('state');
+  const code = queryParams.get('code');
   
-  // const [emailError, setEmailError] = useState(false)
-  // const [passwordError, setPasswordError] = useState(false)
-  
+  const [uidLogin, setUidLogin] = useState<{isLogin: boolean, uid: string}>({
+    isLogin: false,
+    uid: '',
+  });
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [userInput, setUserInput] = useState<inputType>({
-    lineId,
+    lineId: '',
     userName: '',
     phone: '',
-    email,
+    email: '',
     address: '',
   });
   const [memberInfoState, setMemberInfoState] = useState<string>('');
+  const [loginData, setLoginData] = useState<{lineId: string, email: string}>({
+    lineId: '',
+    email: '',
+  });
+
+  const getAuth = useCallback( async () => {
+    const code = queryParams.get('code') as string;
+    localStorage.setItem('code', code);
+    
+    try {
+      const tokenResponse = await fetch('https://api.line.me/oauth2/v2.1/token', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `grant_type=authorization_code&code=${code}&client_id=2004143512&client_secret=5b61b75b88cbc8591a0e6762c4cd176b&redirect_uri=https://link-hsu.github.io/groupbuy-shopping-project`,
+      });
+
+      let tokenData;
+      if (!tokenResponse.ok) {
+        throw new Error("Error occur for fetching token");
+      } else {
+        tokenData = await tokenResponse.json();
+        localStorage.setItem('tokenData', JSON.stringify(tokenData));
+      }
+
+      let id_token;
+      if (!tokenData || !tokenData.id_token) {
+        throw  new Error("No id_token found in tokenData");
+      } else {
+        id_token = tokenData.id_token;
+        localStorage.setItem('id_token', id_token);
+        const uidResponse = await fetch('https://api.line.me/oauth2/v2.1/verify', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: `id_token=${id_token}&client_id=2004143512`,
+        });
+
+        if (!uidResponse.ok) {
+          throw new Error("Error occur for fetching uid")
+        } else {
+          const uidData = await uidResponse.json();
+          localStorage.setItem('uidData', JSON.stringify(uidData));
+          const uid = uidData.sub;
+          const email = uidData.email;
+          const name = uidData.name;
+          localStorage.setItem('uid', uid);
+          localStorage.setItem('email', email);
+          localStorage.setItem('name', name);
+          setUidLogin(() => ({
+            isLogin: true,
+            uid,
+          }));
+          setLoginData(() => ({
+            lineId: name,
+            email,
+          }));
+          setUserInput((prevData) => ({
+            ...prevData,
+            lineId: name,
+            email,
+          }))
+        }
+      }
+
+      if (!tokenData || !tokenData.access_token) {
+        throw new Error("No access_token found in tokenData")
+      } else {
+        const profileResponse = await fetch('https://api.line.me/v2/profile', {
+          headers: {
+            'Authorization': `Bearer ${tokenData.access_token}`
+          },
+        });
+        
+        if (!profileResponse.ok) {
+          throw new Error("Error occur for fetching profile")
+        } else {
+          const profileData = await profileResponse.json();
+          localStorage.setItem("profileData", profileData);
+        }
+      }
+
+    } catch(error) {
+      console.log(error);
+    }
+  }, []);
+
+  if (!uidLogin.isLogin) {
+    if (code && state) {      
+      if (localStorage.getItem('uid')) {
+        setUidLogin(() => ({
+          isLogin: true,
+          uid: localStorage.getItem('uid') as string,
+        }));
+        setLoginData(() => ({
+          lineId: localStorage.getItem('name') as string,
+          email: localStorage.getItem('email') as string,
+        }));
+        setUserInput((prevData) => ({
+          ...prevData,
+          lineId: localStorage.getItem('name') as string,
+          email: localStorage.getItem('email') as string,
+        }));
+      } else {
+        getAuth();
+      }
+    } else if(localStorage.getItem('uid')) {
+      setUidLogin(() => ({
+        isLogin: true,
+        uid: localStorage.getItem('uid') as string,
+      }));
+      setLoginData(() => ({
+        lineId: localStorage.getItem('name') as string,
+        email: localStorage.getItem('email') as string,
+      }));
+      setUserInput((prevData) => ({
+        ...prevData,
+        lineId: localStorage.getItem('name') as string,
+        email: localStorage.getItem('email') as string,
+      }));
+    } 
+  } 
   
   const handleInputChange = (identifier: string, newValue: string) => {
-   setUserInput((prevInput) => (
-    {
-      ...prevInput,
-      [identifier]: newValue
-    }
-   ));
-  };
-  
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    setUserInput((prevInput) => (
+     {
+       ...prevInput,
+       [identifier]: newValue
+     }
+    ));
+   };
+   
+  const handleSubmit = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (isEditing) {
+      setLoginData(() => ({
+        lineId: userInput.lineId,
+        email: userInput.email,
+      }));
       try {
         const checkMemberRegister = await fetch('https://shopstore-groupbuyapidev.openinfo.info/api/groupbuy/checkuser', {
           method: 'POST',
@@ -79,59 +200,64 @@ export const MemberSection: React.FC = () => {
           },
           body: JSON.stringify({
             "partner_id":"09",
-            "line_uid": uid,
+            "line_uid": uidLogin.uid,
           }),
         });
-        
-        const memberRegisterData: any = await checkMemberRegister.json();
-        console.log("memberRegisterData");
-        console.log(memberRegisterData);
-        
-        const updateMemberinfo = await fetch('https://shopstore-groupbuyapidev.openinfo.info/api/groupbuy/createuser', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            "partner_id": userInput.phone,
-            "nick_name": userInput.lineId,
-            "real_name": userInput.userName,
-            "sex": 1,
-            "email": userInput.email,
-            "line_uid": uid,
-            "birthday": "1992",
-            "mobile": "09",
-            "address": userInput.address,
-          }),
-        });
-        const updateResult = await updateMemberinfo.json();
-        console.log("updateResult");
-        console.log(updateResult);
-        
-        if (!updateMemberinfo.ok || !updateResult?.success) {
-          if (!checkMemberRegister.ok || !memberRegisterData?.success) {
-            setMemberInfoState('會員註冊失敗');
-          } else {
-            setMemberInfoState('會員更新失敗');
-          }
-        } else if(updateResult?.success || memberRegisterData?.success) {
-          setMemberInfoState('會員資料更新成功');
+
+        if (!checkMemberRegister.ok) {
+          throw new Error("Error occur for check auth");
         } else {
-          setMemberInfoState('資料更新錯誤');
+          const memberRegisterData = await checkMemberRegister.json();
+          console.log("memberRegisterData");
+          console.log(memberRegisterData);
+          const updateMemberinfo = await fetch('https://shopstore-groupbuyapidev.openinfo.info/api/groupbuy/createuser', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              "partner_id": userInput.phone,
+              "nick_name": userInput.lineId,
+              "real_name": userInput.userName,
+              "sex": 1,
+              "email": userInput.email,
+              "line_uid": uidLogin.uid,
+              "birthday": "1992",
+              "mobile": "09",
+              "address": userInput.address,
+            }),
+          });
+          console.log("updateMemberinfo");
+          console.log(updateMemberinfo);
+          if (!updateMemberinfo.ok) {
+            setMemberInfoState('系統更新錯誤');
+            throw new Error("Error occur for update member info")
+          } else {
+            const updateResult = await updateMemberinfo.json();
+            console.log("updateResult");
+            console.log(updateResult);
+            if (!memberRegisterData?.success) {
+              setMemberInfoState('會員註冊成功');
+            } else if (memberRegisterData?.success && updateResult?.success) {
+              setMemberInfoState('會員資料更新成功');
+            } else {
+              setMemberInfoState('會員更新失敗');
+            }
+          }
         }
       } catch(error) {
         console.log(error);
       }
     }
     setIsEditing((prevEdit) => !prevEdit);
-  };
-
+  }, [isEditing, userInput, uidLogin]);
+  
   return (
     <Box
       display="flex"
       justifyContent="center"
       alignItems="center"
-      flexDirection={!uid ? "column" : undefined}
+      flexDirection={!uidLogin.isLogin ? "column" : undefined}
       sx={(theme) => ({
         background: `linear-gradient(115deg, ${theme.palette.primary.light} ${isSmall ? '40%' : '30%'}, transparent ${isSmall ? '40%' : '30%'}) center center / 100% 100%, url(${memberBackground}) ${isSmall ? '70%' : 'right'} center / auto 100%`,
         // backgroundSize: 'cover',
@@ -140,7 +266,7 @@ export const MemberSection: React.FC = () => {
         position: 'realtive',
       })}
     >
-      {uid ?
+      {uidLogin.isLogin ?
       <Card sx={(theme) => ({
         border: !isSmall ? `2.5px solid ${theme.palette.primary.mellow}` : undefined,
         py: 2,
@@ -220,13 +346,14 @@ export const MemberSection: React.FC = () => {
             >
               修改會員資料
             </Button>
+            {!isEditing &&
             <Typography
               textAlign="center"
               color="red"
               variant="h4"
             >
               {memberInfoState}
-            </Typography>
+            </Typography>}
           </form>
       </Card> :
       <Button

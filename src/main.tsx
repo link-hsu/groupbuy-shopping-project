@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
 import { Home } from '@/Home';
-import { loader as authenticationLoader } from '@/authentication';
+// import { loader as authenticationLoader } from '@/authentication';
 import { action  as sendOrderAction } from './checkout';
 import '@/index.css';
 // import { Provider } from 'react-redux';
@@ -23,19 +23,19 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <Home />,
-    children: [
-      {
-        path: 'auth',
-        loader: authenticationLoader,
-      },
-    ],
+    // children: [
+    //   {
+    //     path: 'auth',
+    //     loader: authenticationLoader,
+    //   },
+    // ],
   },
   {
     path: '/checkout',
     element: <CheckoutForm />,
     action: sendOrderAction,
   }
-], {basename: "/groupbuy-shopping-project/"});
+], {basename: "/groupbuy-shopping-project"});
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <ApiProvider api={api}>
