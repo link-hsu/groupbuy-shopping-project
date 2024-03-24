@@ -11,6 +11,7 @@ import { memberBackground } from "@/assets";
 import { useCallback, useState } from "react";
 import { loginButton } from "@/assets";
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
+import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 
 const lineLoginLink = "https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=2004143512&redirect_uri=https://link-hsu.github.io/groupbuy-shopping-project&state=login&scope=openid%20profile%20email";
 
@@ -363,7 +364,9 @@ export const MemberSection: React.FC = () => {
           py: "0.75rem",
           fontSize: "24px",
           color: "black",
-          backgroundColor: theme.palette.contrastThreshold,
+          textAlign: 'center',
+          display: isSmall ? 'flex' : undefined,
+          flexDirection: isSmall ? 'column' : undefined,
           '&:hover' : {
             backgroundColor: theme.palette.primary.contrastText,
             color: theme.palette.primary.main,
@@ -372,10 +375,15 @@ export const MemberSection: React.FC = () => {
         })}
       >  
         <img src={loginButton} alt="loginButton" />
+        {isSmall ?
+        <KeyboardDoubleArrowUpIcon
+          fontSize="large"
+          sx={{ my: '0.75rem' }}
+        /> :
         <ArrowCircleLeftIcon
           fontSize="large"
           sx={{ mx: '0.75rem' }}
-        />
+        />}
         輕鬆透過Line帳號註冊/登入會員
       </Button>}
     </Box> 
