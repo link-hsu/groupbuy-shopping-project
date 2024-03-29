@@ -308,7 +308,7 @@ export const ProductsModal:React.FC<ProductsModalProps> = ({ isOpen, onClose, gr
                 })}>
                   <img
                     style={{
-                      height: isSmall ? '100%' : '50%',
+                      height: isSmall ? '100%' : '300px',
                       width: isSmall ? '30%' : '100%',
                       objectFit: 'cover',
                       margin: isSmall ? 'auto' : undefined
@@ -388,7 +388,7 @@ export const ProductsModal:React.FC<ProductsModalProps> = ({ isOpen, onClose, gr
                 })}>
                   <img
                     style={{
-                      height: isSmall ? '100%' : '50%',
+                      height: isSmall ? '100%' : '300px',
                       width: isSmall ? '30%' : '100%',
                       objectFit: 'cover',
                       margin: isSmall ? 'auto' : undefined,
