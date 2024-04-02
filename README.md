@@ -1,30 +1,30 @@
-# React + TypeScript + Vite
+<h1 align="center">Groupbuy Shopping project 🥘</h1>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+- Groupbuy Shopping is a demo SPA front-end project for displaying to groupbuy needing customers.
 
-Currently, two official plugins are available:
+🔗 URL: https://link-hsu.github.io/groupbuy-shopping-project/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Tools
+- Front-end
+  - Vite for starter application.
+  - React with Typescript.
+  - Material UI for component library.
+  - Line login to enable member authentication.
+  - Redux Toolkit for state management.
+  - React Router for routing and navigation.
+  - React-anchor-link-smooth-scroll for scrolling.
+  - Eslint for code corectness checking.
+- Back-end
+  - Integrating with groupbuy api which is already in production use.
+- Deploy
+  - Github-page for deploying.
 
-## Expanding the ESLint configuration
+#### Other
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- Version Control: Git/Github
 
-- Configure the top-level `parserOptions` property like this:
+## Contact Me
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+😺 Link Hsu
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+📧 roccoisgood@gmail.com
