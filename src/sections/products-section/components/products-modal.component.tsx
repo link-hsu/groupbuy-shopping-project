@@ -292,7 +292,7 @@ export const ProductsModal:React.FC<ProductsModalProps> = ({ isOpen, onClose, gr
               maxWidth="lg"
             >
               {filteredProducts.map((product, index) => (
-                product.limit_total_product_amount < product.practice_order_amount ?
+                product.limit_total_product_amount > product.practice_order_amount ?
                 (<Card 
                   elevation={2}
                   key={index}
