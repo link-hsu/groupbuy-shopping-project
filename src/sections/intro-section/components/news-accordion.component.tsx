@@ -84,6 +84,7 @@ export const NewsAccordion: React.FC = () => {
     variant="outlined"
     sx={{ bgcolor: palette.primary.main, border: 'none', minWidth: '300px' }}
     >
+      {(newsData?.data.length !== 0) &&
       <Typography
         textAlign="center"
         fontSize={24}
@@ -91,7 +92,7 @@ export const NewsAccordion: React.FC = () => {
         color={palette.background.paper}
       >
         最新消息
-      </Typography>
+      </Typography>}
       <div>
         {newsIsLoading &&
           <Box bgcolor={palette.background.paper} borderRadius={1}>
@@ -125,6 +126,7 @@ export const NewsAccordion: React.FC = () => {
           </Box>
         }
       </div>
+      {(questData?.data.length !== 0) &&
       <Typography
         textAlign="center"
         fontSize={24}
@@ -132,7 +134,7 @@ export const NewsAccordion: React.FC = () => {
         color={palette.background.paper}
       >
         常見問題
-      </Typography>
+      </Typography>}
       <div>
         {questIsLoading &&
           <Box bgcolor={palette.background.paper} borderRadius={1}>
@@ -160,7 +162,7 @@ export const NewsAccordion: React.FC = () => {
         ))}
         {!questIsLoading && !questData?.data && 
           <Box bgcolor={palette.background.paper} borderRadius={1}>
-            <Typography variant="h4">
+            <Typography variant="h4" textAlign="center" color="red">
               Connection Error
             </Typography>
           </Box>
